@@ -9,8 +9,10 @@ public class Passwords {
 	static Generator generator;
 	
 	public static void main(String[] args){
-		Generator generator = new Generator();
-		String filename = args[0]; 
+		generator = new Generator();
+		String filename = args[0];
+		int number_of_passwords = Integer.parseInt(args[1]);
+		int password_length = Integer.parseInt(args[2]);
 		
 		try{
 			/* Open the file that is the first command line 
@@ -19,7 +21,7 @@ public class Passwords {
 			// Get the object of DataInputStream
 			DataInputStream in = new DataInputStream(fstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			String strLine =br.readLine();
+			String strLine = br.readLine();
 			//Process each instruction
 			while (strLine!= null) {
 				//DO THE PROCESSING
@@ -36,6 +38,13 @@ public class Passwords {
 		
 		generator.printDiagrams();
 		generator.printBegin();
+		
+		for(int count = 0; count < number_of_passwords; count++)
+		{
+			String password = generator.createPassword(password_length);
+			System.out.println(password);
+		}
+		
 	}
 	
 	public static void modifyfollowerTable(String[] line){
