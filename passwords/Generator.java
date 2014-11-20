@@ -1,31 +1,51 @@
 package passwords;
 
 public class Generator {
-	private int[] begin_frequency;
+	private long[] begin_frequency;
 	//assume row values are the first letter and the column values are the second letter
-	private int[][] diagram_frequency;
+	private long[][] diagram_frequency;
 	//contains the total for each row
 	private long[] total_diagrams;
 	private long total_beginning;
 	
 	public Generator()
 	{
-		begin_frequency = new int[26];
-		diagram_frequency = new int[26][26];
+		begin_frequency = new long[26];
+		diagram_frequency = new long[26][26];
 		total_diagrams = new long[26];
 		total_beginning = 0;
 	}
 	
-	public void update_diagram(int row, int col)
+	public long[] getBegin()
+	{
+		return begin_frequency;
+	}
+	
+	public long[][] getDiagram()
+	{
+		return diagram_frequency;
+	}
+	
+	public void updateDiagram(int row, int col)
 	{
 		diagram_frequency[row][col]+=1;
 		total_diagrams[row]++;
 	}
 	
-	public void update_begin(int row)
+	public void updateBegin(int row)
 	{
 		begin_frequency[row]+=1;
 		total_beginning++;
+	}
+	
+	public long getDiagramValue(int row, int col)
+	{
+		return diagram_frequency[row][col];
+	}
+	
+	public long getBeginValue(int index)
+	{
+		return begin_frequency[index];
 	}
 	
 	public String createPassword(int length)
@@ -45,6 +65,30 @@ public class Generator {
 		}
 		return password;
 	}
+
+	public void printDiagrams(){
+		for (int i = 0; i < 27; i ++){
+			System.out.print("\t" + (char)(97+i));
+			if (i == 26){
+				System.out.println();
+			}
+		}
+		for (int i = 0; i < diagram_frequency.length; i ++){
+			System.out.print((char)(97+i));
+			for(int j = 0; j < diagram_frequency.length; j++){
+				System.out.print("\t"+diagram_frequency[i][j]);
+			}
+			System.out.print("\n");
+		}
+	}
+	
+	public void printBegin()
+	{
+		for (int i = 0; i < 26; i ++){
+			System.out.println((char)(97+i) + "\t"+ begin_frequency[i]);
+		}
+	}
+	
 	private char getDiagramLetter(int index, int chosen)
 	{
 		int base = 0;
@@ -64,6 +108,7 @@ public class Generator {
 		letter_rep+=97;
 		return (char)letter_rep;
 	}
+	
 	private char getBegLetter(int chosen)
 	{
 		int base = 0;
