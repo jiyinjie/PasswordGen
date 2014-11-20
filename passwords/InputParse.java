@@ -46,7 +46,7 @@ public class InputParse {
 				
 				char a = line[i].charAt(j);
 				char b = line[i].charAt(j+1);
-				if (j == 0){
+				if (j == 0 && (int)a >= 97 && (int)a <= 122){
 					firstChar[((int)a)%97] ++;
 				}
 				
@@ -77,6 +77,7 @@ public class InputParse {
 	public long[] getFirstCharList(){
 		return firstChar;
 	}
+	
 
 	public void printFollowerTable(){
 		for (int i = 0; i < 27; i ++){

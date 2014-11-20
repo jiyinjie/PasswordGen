@@ -6,6 +6,10 @@ public class Passwords {
 		input.parse();
 		
 		input.printFollowerTable();
+		long[] wordBegin = input.getFirstCharList();
+		for (int i = 0; i < 26; i ++){
+			System.out.println((char)(97+i) + "\t"+ wordBegin[i]);
+		}
 		
 		
 	}
