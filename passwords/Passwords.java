@@ -9,10 +9,14 @@ public class Passwords {
 	static Generator generator;
 	
 	public static void main(String[] args){
-		generator = new Generator();
 		String filename = args[0];
 		int number_of_passwords = Integer.parseInt(args[1]);
 		int password_length = Integer.parseInt(args[2]);
+		
+		//make sure to create a String[] that is then passed into generator constructor function so
+		//that dictionary will be used.
+		//generator = new Generator(dictionary);
+		generator = new Generator();
 		
 		try{
 			/* Open the file that is the first command line 
