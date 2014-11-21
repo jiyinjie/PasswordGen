@@ -1,5 +1,7 @@
 package passwords;
 
+import java.util.Arrays;
+
 public class Generator {
 	private long[] begin_frequency;
 	//assume row values are the first letter and the column values are the second letter
@@ -8,12 +10,31 @@ public class Generator {
 	private long[] total_diagrams;
 	private long total_beginning;
 	
+	private long[][][] trigram_frequency;
+	private long[][] total_trigrams;
+	
+	String[] dictionary;
+	
 	public Generator()
 	{
 		begin_frequency = new long[26];
 		diagram_frequency = new long[26][26];
 		total_diagrams = new long[26];
 		total_beginning = 0;
+		trigram_frequency = new long[26][26][26];
+		total_trigrams = new long[26][26];
+		dictionary = null;
+	}
+	
+	public Generator(String[] dict)
+	{
+		dictionary = dict;
+		begin_frequency = new long[26];
+		diagram_frequency = new long[26][26];
+		total_diagrams = new long[26];
+		total_beginning = 0;
+		trigram_frequency = new long[26][26][26];
+		total_trigrams = new long[26][26];
 	}
 	
 	public long[] getBegin()
@@ -24,6 +45,11 @@ public class Generator {
 	public long[][] getDiagram()
 	{
 		return diagram_frequency;
+	}
+	
+	public long[][][] getTrigram()
+	{
+		return trigram_frequency;
 	}
 	
 	public void updateDiagram(int row, int col)
@@ -38,9 +64,20 @@ public class Generator {
 		total_beginning++;
 	}
 	
+	public void updateTrigram(int dim_x, int dim_y, int dim_z)
+	{
+		trigram_frequency[dim_x][dim_y][dim_z]+=1;
+		total_trigrams[dim_x][dim_y]++;
+	}
+	
 	public long getDiagramValue(int row, int col)
 	{
 		return diagram_frequency[row][col];
+	}
+	
+	public long getTrigramValue(int dim_x, int dim_y, int dim_z)
+	{
+		return trigram_frequency[dim_x][dim_y][dim_z];
 	}
 	
 	public long getBeginValue(int index)
@@ -51,17 +88,33 @@ public class Generator {
 	public String createPassword(int length)
 	{
 		String password = "";
-		char char_index;
+		char[] char_index = new char[2];
 
 		int beg_letter = (int)(Math.random() * total_beginning);
-		char_index = getBegLetter(beg_letter);
-		password+= ""+char_index;
+		char_index[0] = getBegLetter(beg_letter);
+		password+= ""+char_index[0];
+
+		int second_letter = (int)(Math.random() * total_diagrams[char_index[1]-97]);
+		char_index[1] = getDiagramLetter(char_index[1]-97, second_letter);
+		password+= ""+char_index[1];
+		
 		
 		for(int k = 1; k < length; k++)
 		{
-			int second_letter = (int)(Math.random() * total_diagrams[char_index-97]);
-			char_index = getDiagramLetter(char_index-97, second_letter);
-			password+= ""+char_index;			
+			int third_letter = (int)(Math.random() * total_trigrams[char_index[0]-97][char_index[1]-97]);
+			char third = getTrigramLetter(char_index[0]-97, char_index[1]-97, third_letter);
+			password+= ""+third;
+			
+			char_index[0] = char_index[1];
+			char_index[1] = third;
+		}
+		if(dictionary != null)
+		{
+			String valid = checkPassword(password);
+			if(valid != null)
+			{
+				password+="\nWe rejected this password because of the substring "+valid+" was found in the dictionary.";
+			}
 		}
 		return password;
 	}
@@ -87,6 +140,26 @@ public class Generator {
 		for (int i = 0; i < 26; i ++){
 			System.out.println((char)(97+i) + "\t"+ begin_frequency[i]);
 		}
+	}
+	
+	private char getTrigramLetter(int first, int second, int chosen)
+	{
+		int base = 0;
+		int max = 0;
+		int letter_rep = 0;
+		
+		for(int col = 0; col < trigram_frequency[first][second].length; col++)
+		{
+			base = max;
+			max += trigram_frequency[first][second][chosen];
+			if(chosen >= base && chosen <= max)
+			{
+				letter_rep = col;
+				break;
+			}
+		}
+		letter_rep+=97;
+		return (char)letter_rep;
 	}
 	
 	private char getDiagramLetter(int index, int chosen)
@@ -130,5 +203,24 @@ public class Generator {
 		}
 		letter_rep+=97; //get ascii code
 		return (char)letter_rep; 
+	}
+	
+	private String checkPassword(String password)
+	{
+		for(int start = 0; start < password.length(); start++)
+		{
+			for(int len = 1; len <= password.length()-start; len++)
+			{
+				String sub = password.substring(start, start+len);
+				if(sub.length() >= 4)
+				{
+					int index = Arrays.binarySearch(dictionary, sub); 
+					if(index != -1)
+						return dictionary[index];
+				}
+			}
+		}
+		
+		return null;
 	}
 }
