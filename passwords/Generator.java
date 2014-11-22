@@ -1,5 +1,6 @@
 package passwords;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Generator {
@@ -85,7 +86,7 @@ public class Generator {
 		return begin_frequency[index];
 	}
 	
-	public String createPassword(int length)
+	public String createPassword(int length, ArrayList<String> additional)
 	{
 		String password = "";
 		char[] char_index = new char[2];
@@ -115,6 +116,15 @@ public class Generator {
 			{
 				password+="\nWe rejected this password because of the substring "+valid+" was found in the dictionary.";
 			}
+			else{
+				for (int i = 0; i < additional.size(); i++){
+					for(int j = 0; j < additional.size()-4; j ++){
+						if(password.substring(i, i+4).equals(additional.get(i)));
+							password += password+="\nWe rejected this password because of the substring "+valid+" was found in the dictionary.";
+					}
+				}
+			}
+			
 		}
 		return password;
 	}

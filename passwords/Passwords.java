@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class Passwords {
 	static Generator generator;
+	static ArrayList<String> additional = new ArrayList<String>();
 	
 	public static void main(String[] args){
 		String filename = args[0];
@@ -30,7 +32,7 @@ public class Passwords {
 			while (strLine!= null) {
 				//DO THE PROCESSING
 				String[] parsedInstruction = strLine.split("\\s+");
-				modifyfollowerTable(parsedInstruction);
+				modifySecondEntropy(parsedInstruction);
 				strLine = br.readLine();
 			}
 			// Close the input stream
@@ -45,10 +47,36 @@ public class Passwords {
 		
 		for(int count = 0; count < number_of_passwords; count++)
 		{
-			String password = generator.createPassword(password_length);
+			String password = generator.createPassword(password_length, additional);
 			System.out.println(password);
 		}
 		
+	}
+	
+	public static void readAdditionalList(String filename){
+		
+		try{
+			/* Open the file that is the first command line 
+			parameter*/			
+			FileInputStream fstream = new FileInputStream(filename);
+			// Get the object of DataInputStream
+			DataInputStream in = new DataInputStream(fstream);
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String strLine = br.readLine();
+			//Process each instruction
+			while (strLine!= null) {
+				//DO THE PROCESSING
+				String[] parsedInstruction = strLine.split("\\s+");
+				for(int i = 0; i < parsedInstruction.length; i++){
+					additional.add(parsedInstruction[i]);
+				}
+				strLine = br.readLine();
+			}
+			// Close the input stream
+			in.close();
+		} catch (Exception e) {// Catch exception if any
+			System.err.println("Error: " + e.toString());
+		}
 	}
 	
 	public static void modifyfollowerTable(String[] line){
