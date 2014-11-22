@@ -81,4 +81,43 @@ public class Passwords {
 			}
 		}
 	}
+	
+	public static void modifySecondEntropy(String[] line){
+		for (int x = 0; x < line.length; x++){
+			for (int y = 0; y < line[x].length()-2; y++){
+				
+				char a = line[x].charAt(y);
+				char b = line[x].charAt(y+1);
+				char c = line[x].charAt(y+2);
+				
+				if (y == 0 && (int)a >= 97 && (int)a <= 122){
+					generator.updateBegin( ((int)a) % 97);
+				}
+				
+				if (y == 0 && (int)a >= 97 && (int)a <= 122){
+					generator.updateBegin( ((int)a) % 97);
+				}
+				
+				if (a >= 97 && a <= 122){
+					if (b >= 97 && b <= 122){
+						if (c >= 97 && c <= 122){
+							int lead = (int)a % 97;
+							int follow = (int)b % 97;
+							int last = (int)c % 97;
+							generator.updateTrigram(lead, follow, last);
+						}
+						else{
+							if (y+3 >= line[x].length());
+							break;
+						}
+					}
+					else 
+						y++;
+				}
+				else{
+					y++;
+				}
+			}
+		}
+	}
 }
